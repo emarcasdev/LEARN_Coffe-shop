@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.cofffeshopinterface.CoffeController">
+    <stylesheets>
+        <URL value="@styles/style.css"/>
+    </stylesheets>
+
+    <children>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="25" right="25" bottom="25" left="25"/>
+            </padding>
+
+            <!--HEADER-->
+            <VBox spacing="6" styleClass="header">
+                <Label text="MyCafetería FX" styleClass="title"/>
+                <Button text="Empezar simulación" fx:id="btnStart" styleClass="btn-start" onAction="#onSimulate"/>
+            </VBox>
+
+            <!-- Contendores para los clientes y camareros -->
+            <HBox spacing="12" VBox.vgrow="ALWAYS">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Clientes:" styleClass="clients-txt"/>
+                    <ListView fx:id="listClients" prefHeight="350" maxHeight="350" VBox.vgrow="NEVER" styleClass="container"/>
+                </VBox>
+
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Camareros:" styleClass="waiters-txt"/>
+                    <ListView fx:id="listWaiters" prefHeight="350" maxHeight="350" VBox.vgrow="NEVER" styleClass="container"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </children>
+</StackPane>
