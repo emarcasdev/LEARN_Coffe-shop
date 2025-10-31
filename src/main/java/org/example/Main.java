@@ -6,12 +6,12 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         // Creamos los clientes
         List<Client> clients = new ArrayList<>();
-        clients.add(new Client("David", 800));
-        clients.add(new Client("Diego", 1400));
-        clients.add(new Client("Agustín", 1800));
-        clients.add(new Client("Adriano", 1000));
-        clients.add(new Client("John", 1500));
-        clients.add(new Client("Iván", 900));
+        clients.add(new Client("David", 500));
+        clients.add(new Client("Diego", 300));
+        clients.add(new Client("Agustín", 600));
+        clients.add(new Client("Adriano", 350));
+        clients.add(new Client("John", 400));
+        clients.add(new Client("Iván", 550));
 
         // Creamos los camareros
         List<Waiter> waiters = new ArrayList<>();
