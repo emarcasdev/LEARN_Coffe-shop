@@ -1,0 +1,205 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{float}
+\usepackage[margin=2.5cm]{geometry}
+% ===== Numeración de secciones =====
+\renewcommand\thesection{\arabic{section}}
+\makeatletter
+\makeatother
+\usepackage[hidelinks]{hyperref}
+% ===== Imagenes =====
+\usepackage{graphicx}
+\DeclareGraphicsExtensions{.png}
+\graphicspath{{images/}}
+% ===== Tablas =====
+\usepackage{array}
+\usepackage{tabularx}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+% ===== Estilos para el recuadro bash para API =====
+\usepackage{xcolor}
+\usepackage{listings}
+\definecolor{codebg}{RGB}{245,245,245}
+\lstdefinestyle{bash}{
+  language=bash,
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  breaklines=true,
+  showstringspaces=false
+}
+
+\title{DOCUMENTEACIÓN\\\LARGE TRABAJO — CAFETERÍA MULTI-HILOS}
+\author{Eder Martínez Castro}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\clearpage
+
+\section{Análisis y Especificación de Requisitos}
+\subsection{Descripción del problema}
+\noindent Se requiere un \textbf{programa en Java} que \textbf{simule una cafetería} utilizando \textbf{hilos}, los \textbf{clientes} llegaran a la cafetería y serán atendidos por los \textbf{camareros}.
+\begin{itemize}
+    \item Cada \textbf{cliente} tendrá \texttt{nombre} y \texttt{tiempoEspera}.
+    \item Los \textbf{camareros} preparán los cafés en orden de llegada.
+    \item Si el timepo de espera del cliente se acaba, \textbf{se marchará}.
+    \item El sistema terminará cuando \textbf{todos los clientes han recibido su cafe o se fueron}.
+\end{itemize}
+
+\medskip
+\noindent \textbf{Alcance:} Se implementarán 2 versiones:
+\begin{itemize}
+    \item \textbf{Terminal:} Simulación simple por terminal.
+    \item \textbf{Interfaz:} Se creará una interfaz simple en \texttt{JavaFX}
+\end{itemize}
+
+\subsection{Requisitos funcionales}
+\noindent A continuación, se listan los requisitos funcionales del sistema:
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\linewidth}{|l|Y|}
+      \hline
+      \textbf{ID} & \textbf{Descripción} \\
+      \hline
+      RF-01 & \textbf{Crear clientes}: \texttt{nombre:String} y \texttt{tiempoEspera:int (ms)}. \\
+      \hline
+      RF-02 & \textbf{Crear camareros}: instanciar $n$ camareros, cada uno se ejecutará en un hilo independiente. \\
+      \hline
+      RF-03 & \textbf{Preparar café}: el camarero simulara con \texttt{Threads.sleep} el tiempo que tarda en prepararlo. \\
+      \hline
+      RF-04 & \textbf{Abandono por espera}: si el cliente no recibe su café y se le acabo su \texttt{tiempoEspera}, se marchará. \\
+      \hline
+      RF-05 & \textbf{Entrega del café}: cuando el camarero haya terminado de hacer el café y el cliente siga esperando se le entragará. \\
+      \hline
+      RF-06 & \textbf{Fin del programa}: cuando todos los clientes hayan recibido su cafe o se hayan ido, el programa terminará. \\
+      \hline
+    \end{tabularx}
+\end{table}
+
+
+\subsection{Requisitos no funcionales}
+\noindent A continuación, se listan los requisitos no funcionales del sistema:
+\begin{table}[H]
+  \centering
+  \begin{tabularx}{\linewidth}{|l|Y|}
+    \hline
+    \textbf{ID} & \textbf{Descripción} \\
+    \hline
+    RNF-01 & \textbf{Lenguaje}: El programa se realizará en \texttt{Java} y \texttt{JavaFX}. \\
+    \hline
+    RNF-02 & \textbf{Observabilidad}: Los mensjes mostrados deben ser claros y simples. \\
+    \hline
+    RNF-03 & \textbf{Cierre ordenado}: todos los hilos terminaran de forma correcta  antes de que termine el programa. \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+\subsection{Casos de uso}
+\noindent \textbf{Descripción de casos de uso principales:}
+\begin{table}[H]
+  \centering
+  \begin{tabularx}{\linewidth}{|l|Y|}
+    \hline
+    \textbf{Caso de uso} & \textbf{Descripción} \\
+    \hline
+    CU-01 Llegada y pedido & El cliente llega, y lo atiende el camarero y esperar su café hasta que se lo de o su \texttt{tiempoEspera} acabe. \\
+    \hline
+    CU-02 Preparación & Un camarero se le asigna un cliente de la \textbf{lista} y ejecuta \texttt{prepararCafe(cliente)} simulando el tiempo que le lleva hacer el café. \\
+    \hline
+    CU-03 Entrega & Si el cliente no se le termino el tiempo de espera, el camarero le \textbf{entrega el café} y se muestra el \textbf{tiempo total} de preparación de ese café por parte del camarero. \\
+    \hline
+    CU-04 Abandono & Si el tiempo de espera termina antes de la entrega, el cliente \textbf{se marchará} y el camarero pasa al siguiente cliente. \\
+    \hline
+    CU-05 Fin del programa & Cuando ya todos los clientes recibieron su café o se fueron y los camareros ya no están preparando cafés. \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+\subsection{Historias de usuario}
+\begin{table}[H]
+  \centering
+  \begin{tabularx}{\linewidth}{|l|Y|Y|Y|}
+    \hline
+    \textbf{ID} & \textbf{Como...} & \textbf{Quiero...} & \textbf{Para...} \\
+    \hline
+    HU-01 & Cliente & Pedir mi café y esperar un tiempo límite & No perder el tiempo si no me atienden me marcho. \\
+    \hline
+    HU-02 & Camarero & Atender a los cliente uno por uno & Empezar a servir por orden de llegada. \\
+    \hline
+    HU-03 & Usuario & Poder ver el estado del programa & Saber que clientes están atendidos y por quien y saber quien recibe su café o se marcha. \\
+    \hline
+  \end{tabularx}
+\end{table}
+\clearpage
+
+\section{Arquitectura del sistema}
+\subsection{Arquitectura}
+\noindent La arquitectura de está aplicación se explicará en base a lo realizado en \texttt{JavaFX} ya que sigue una arquitectura \textbf{Modelo–Vista–Controlador (MVC)} sencillo que corre únicamente en local.
+\begin{itemize}
+    \item \textbf{Modelo:} cuenta con las clases \texttt{cliente} y \texttt{camarero} con la lógica, los camareros preparan los cafes cuando tienen un cliente al que están atendiendo y notifican cuando terminan y el cliente espera su café hasta que se lo sirvan o se agote su tiempo de espera y se marche.
+    \item \textbf{Vista}: muestra los \texttt{clientes} y \texttt{camareros} con sus estados si están esperando, atendidos, si les sirvieron o si se fueron y si están libres o atendiendo un cliente.
+    \item \textbf{Controlador:} Responde al \texttt{botón de iniciar la simulación} y \texttt{actualiza los contenedors} para mostrar el estado de los clientes y camareros en la interfaz.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\linewidth]{MVC.png}
+    \caption{Arquitectura MVC}
+    \label{fig:arquitecture}
+\end{figure}
+
+\subsection{Clases}
+\noindent En este caso tenemos 2 clases principales la de \textbf{Clientes} y la de \textbf{Camareros}:
+
+\subsection*{Cliente/Client}
+\noindent
+\textbf{Client} representa a un cliente que entra en la cafetería, pide su café y espera un tiempo máximo (\texttt{waitingTime}) antes de marcharse si no lo recibe.
+
+\paragraph{Atributos}
+\begin{itemize}
+  \item \textbf{Identificación:} \texttt{name} (nombre del cliente), \texttt{waitingTime} (tiempo que está dispuesto a esperar en ms).
+  \item \textbf{Estados:} \texttt{inFile} (si está en la cola), \texttt{assigned} (si está atendido), \texttt{served} (si ya le sirvieron el café), \texttt{left} (si ya se marchó).
+  \item \textbf{Tiempos:} \texttt{arriveAt} (instante en el que llega), \texttt{timeStart} (inicio del tiempo de espera), \texttt{preparationTime} (cuanto tardo el camarero en hacer su café).
+\end{itemize}
+
+\paragraph{Flujo:}
+Al arrancar, marca la llegada del cliente (\texttt{timeStart}, \texttt{arriveAt}, \texttt{inFile = true}) y entra en un bucle esperando a que \texttt{served} pase a \texttt{true}. al mismo tiempo, comprueba si el tiempo de espera actual supera al \texttt{waitingTime}, si ocurre, marcamos \texttt{left = true} y temina. Si el camarero le entregó el café a tiempo, muestra un mensaje de éxito con el tiempo de preparación (\texttt{preparationTime}) que el camarero escribió para este cliente.
+
+\vspace{1em}
+\subsection*{Camarero/Waiter}
+\noindent
+\textbf{Waiter} representa a un camarero que atiende a un solo cliente asignado cada vez.
+
+\paragraph{Atributos}
+\begin{itemize}
+  \item \textbf{Identificación:} \texttt{name} (nombre del camarero).
+  \item \textbf{Control:} \texttt{assignament} (cliente asignado actual), \texttt{running} (permite poder parar el bucle), \texttt{preparationTime} (tiempo que tarda el camarero en hacer el café).
+  \item \textbf{Temporización:} \texttt{timeStart} (para medir la duración desde que empieza con la preparación).
+  \item \textbf{Simulación:} generador aleatorio (\texttt{Random}) para la preparación ya que no se tarda lo mismo siempre en hacer un café.
+\end{itemize}
+
+\paragraph{Flujo:}
+El camarero trabaja mientras \texttt{running} sea \texttt{true} o quede un cliente asignado. Si no hay cliente (\texttt{assignament == null}), está inactivo unos milisegundos y vuelve a comprobar para ver si puede atender. Cuando hay un \texttt{Cliente}, primero valida si el cliente ya \texttt{left} (si ya se marchó) antes de empezar. si es así, pasá al siguiente cliente. Si todavía sigue, empieza a atender, y mide el tiempo de preparación (\texttt{prepareCoffe()}) y, al terminar, si el cliente no se marcho, guarda \texttt{preparationTime} y marca \texttt{client.served = true}. Pero si el cliente se marchó durante la preparación, lo mostramos por la terminal. Y finalmente, deja \texttt{assignament = null} para poder atender a otro cliente.
+
+\subsection{Stack empleado}
+\noindent Para el desarrollo nuestra aplicación tanto en terminal como con interfaz, se utilizaron las siguietes tecnológias:
+\begin{itemize}
+    \item Utilizamos \texttt{Java} como \textbf{entorno de ejecución} principal.
+    \item Utilizamos \texttt{JavaFX} para crear una \textbf{interfaz con Java}.
+\end{itemize}
+
+\subsection{Interfaz}
+\noindent Se creo una interfaz muy simple en \texttt{JavaFX}, para \textbf{mostrar el programa de forma clara y bonita}, para saber cuando son atendidos los clientes y cuanto tardan en recibir su café o si se han ido. Como podemos apreciar tenemos un \textbf{título} y debajo el \textbf{botón} para comenzar con esta simulación del servicio de la cafetería y luego tenemos \textbf{dos contenedores} uno para clientes y el otro para los camareros donde mostramos su estado.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\linewidth]{interfaz.png}
+    \caption{Interfaz en JavaFX}
+    \label{fig:interfaz}
+\end{figure}
+
+\end{document}
