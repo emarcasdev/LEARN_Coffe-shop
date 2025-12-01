@@ -69,23 +69,6 @@ public class CoffeController {
 
             // Lanzamos los clientes de forma que como máximo haya 2 activos
             for (Client client : clients) {
-                // Esperamos a que un camarero este libre para que pase el siguiente cliente
-                Waiter waiterFree = null;
-                while (waiterFree == null) {
-                    for (Waiter waiter : waiters) {
-                        // Si el camarero está libre
-                        if (waiter.assignament == null) {
-                            waiterFree = waiter;
-                            break;
-                        }
-                    }
-                }
-
-                // Asignar el camarero libre a nuestro cliente
-                client.assigned = true;
-                waiterFree.assignament = client;
-
-                // El cliente entra
                 client.start();
             }
 
@@ -110,6 +93,19 @@ public class CoffeController {
 
     // Función para refresacar y mostrar el contenido actual de los clientes y camareros
     private void refreshUI() {
+        // Asignar cliente a un camarero para que ninguno qude parado
+        for (Waiter waiter : waiters) {
+            if (waiter.assignament == null) {
+                for (Client client : clients) {
+                    if (client.inFile && !client.assigned && !client.left && !client.served) {
+                        client.assigned = true;
+                        waiter.assignament = client;
+                        break;
+                    }
+                }
+            }
+        }
+
         // Lista pera guardar los estodos de los clientes
         List<String> clientsStates = new ArrayList<>();
         for (Client client : clients) {
@@ -149,5 +145,12 @@ public class CoffeController {
             listClients.getItems().setAll(clientsStates);
             listWaiters.getItems().setAll(waitersStates);
         });
+    }
+
+    @FXML
+    private void addWaiter() {
+        Waiter newWaiter = new Waiter("Camarero");
+        waiters.add(newWaiter);
+        newWaiter.start();
     }
 }

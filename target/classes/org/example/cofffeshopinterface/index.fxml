@@ -34,6 +34,10 @@
                     <ListView fx:id="listWaiters" prefHeight="350" maxHeight="350" VBox.vgrow="NEVER" styleClass="container"/>
                 </VBox>
             </HBox>
+
+            <HBox spacing="12" VBox.vgrow="ALWAYS">
+                <Button text="Agregar camarero" fx:id="btnAddWaiter" styleClass="btn-start" onAction="#addWaiter"/>
+            </HBox>
         </VBox>
     </children>
 </StackPane>
