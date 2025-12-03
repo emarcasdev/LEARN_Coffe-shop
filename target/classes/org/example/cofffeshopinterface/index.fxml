@@ -22,7 +22,7 @@
                 <Button text="Empezar simulación" fx:id="btnStart" styleClass="btn-start" onAction="#onSimulate"/>
             </VBox>
 
-            <!-- Contendores para los clientes, camareros y  -->
+            <!-- Contendores para los clientes, camareros y cafes preparados -->
             <HBox spacing="12" VBox.vgrow="ALWAYS">
                 <VBox spacing="4" HBox.hgrow="ALWAYS">
                     <Label text="Clientes:" styleClass="clients-txt"/>
