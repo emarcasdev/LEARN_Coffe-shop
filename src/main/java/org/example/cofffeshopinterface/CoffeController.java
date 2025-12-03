@@ -13,6 +13,10 @@ public class CoffeController {
     @FXML private Button btnStart;
     @FXML private ListView<String> listClients;
     @FXML private ListView<String> listWaiters;
+    @FXML private ListView<String> listCoffes;
+
+    private Buffer buffer;
+    private Barista barista;
 
     // Creamos las listas para clientes y camareros para la simulación
     private final List<Client> clients = new ArrayList<>();
@@ -42,6 +46,22 @@ public class CoffeController {
         clients.clear();
         waiters.clear();
 
+        // Creamos el buffer con su capacidad
+        buffer = new Buffer(2);
+
+        // Instanciamos a los camareros
+        waiters.add(new Waiter("Roberto", buffer));
+        waiters.add(new Waiter("Nuria", buffer));
+
+        // Asignar el buffer a cada camarero
+        for (Waiter waiter : waiters) {
+            waiter.setBuffer(buffer);
+        }
+
+        // Creamos al barista
+        barista = new Barista(buffer);
+        barista.start();
+
         // Instanciamos los clientes con sus tiempos como en el Main
         clients.add(new Client("David",  45_000));
         clients.add(new Client("Diego",  75_000));
@@ -49,10 +69,6 @@ public class CoffeController {
         clients.add(new Client("Adriano",90_000));
         clients.add(new Client("John",   60_000));
         clients.add(new Client("Iván",  105_000));
-
-        // Instanciamos a los camareros
-        waiters.add(new Waiter("Roberto"));
-        waiters.add(new Waiter("Nuria"));
 
         // Creamos un hilp que ejecutará el metodo que con la lógica principal
         Thread mainThread = new Thread(this::runSimulation, "main-thread");
@@ -93,6 +109,16 @@ public class CoffeController {
 
     // Función para refresacar y mostrar el contenido actual de los clientes y camareros
     private void refreshUI() {
+        // Aun no hay buffer para mostrar
+        if (buffer == null) {
+            Platform.runLater(() -> {
+                listClients.getItems().clear();
+                listWaiters.getItems().clear();
+                listCoffes.getItems().clear();
+            });
+            return;
+        }
+
         // Asignar cliente a un camarero para que ninguno qude parado
         for (Waiter waiter : waiters) {
             if (waiter.assignament == null) {
@@ -140,17 +166,28 @@ public class CoffeController {
             waitersStates.add(String.format(waiter.name + " — " + state));
         }
 
+        // Mostrar los cafes actualmente en el buffer
+        List<String> coffesStates = new ArrayList<>();
+        var coffesInBuffer = buffer.getCoffesList(); // ya es synchronized en Buffer
+        coffesStates.add("Cafés en espera (" + coffesInBuffer.size() + "/" + waiters.size() + "):");
+
         // Actualizamos las listas de la interfaz
         Platform.runLater(() -> {
             listClients.getItems().setAll(clientsStates);
             listWaiters.getItems().setAll(waitersStates);
+            listCoffes.getItems().setAll(coffesStates);
         });
     }
 
     @FXML
     private void addWaiter() {
-        Waiter newWaiter = new Waiter("Camarero");
+        if (buffer == null) return;
+        // Creamos al camarero
+        Waiter newWaiter = new Waiter("Camarero " + (waiters.size() + 1), buffer);
         waiters.add(newWaiter);
         newWaiter.start();
+
+        // Actualizamos la capacidad del buffer
+        buffer.setCapacity(waiters.size());
     }
 }

@@ -22,11 +22,16 @@
                 <Button text="Empezar simulación" fx:id="btnStart" styleClass="btn-start" onAction="#onSimulate"/>
             </VBox>
 
-            <!-- Contendores para los clientes y camareros -->
+            <!-- Contendores para los clientes, camareros y cafes preparados -->
             <HBox spacing="12" VBox.vgrow="ALWAYS">
                 <VBox spacing="4" HBox.hgrow="ALWAYS">
                     <Label text="Clientes:" styleClass="clients-txt"/>
                     <ListView fx:id="listClients" prefHeight="350" maxHeight="350" VBox.vgrow="NEVER" styleClass="container"/>
+                </VBox>
+
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Cafés preparados:" styleClass="buffer-txt"/>
+                    <ListView fx:id="listCoffes" prefHeight="350" maxHeight="350" VBox.vgrow="NEVER" styleClass="container"/>
                 </VBox>
 
                 <VBox spacing="4" HBox.hgrow="ALWAYS">

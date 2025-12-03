@@ -7,27 +7,18 @@ public class Waiter extends Thread {
     volatile String name;
     // Nombre del cliente asignado
     volatile Client assignament = null;
+    // Declaramos la referecia al buffer
+    private Buffer buffer;
     // Saber si el camarero tiene trabajo
     boolean running = true;
     // Tiempo que llevo la preparacion del cafe
     long preparationTime;
-    // Creamos un generador aleatorio
-    private Random random = new Random();
-
     // Camarero empiza a atender
     long timeStart;
 
-    public Waiter (String name) {
+    public Waiter (String name, Buffer buffer) {
         this.name = name;
-    }
-
-    // Simulamos lo que lleva al camarero hacer un cafe
-    private void prepareCoffe() {
-        try {
-            Thread.sleep(30_000 + random.nextLong(60_001));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        this.buffer = buffer;
     }
 
     @Override
@@ -51,23 +42,33 @@ public class Waiter extends Thread {
                 continue;
             }
 
-            System.out.println("[Camarero: " + name + "] Atendiendo al cliente " + client.name + ".");
-            // Empieza a hacer el cafe
-            timeStart = System.currentTimeMillis();
-            prepareCoffe();
-            // El tiempo que le llevo hacer el cafe
-            preparationTime = System.currentTimeMillis() - timeStart;
+            try {
+                System.out.println("[Camarero: " + name + "] Atendiendo al cliente " + client.name + ".");
+                // Empieza a hacer el cafe
+                timeStart = System.currentTimeMillis();
+                // Esperamos hasta tener los cafés
+                buffer.takeCoffe();
+                // El tiempo que le llevo hacer el cafe
+                preparationTime = System.currentTimeMillis() - timeStart;
 
-            // Si el cliente no nos hizo bomba de humo, le entregamos su cafe
-            if (!client.left) {
-                client.preparationTime = preparationTime;
-                client.served = true;
-            } else {
-                // Si el cliente se marcho durante la preparacion de su cafe, lo notificamos
-                System.out.println("[Camarero: " + name + "] El cliente " + client.name + " se fue de la cola sin su café.");
+                // Si el cliente no nos hizo bomba de humo, le entregamos su cafe
+                if (!client.left) {
+                    client.preparationTime = preparationTime;
+                    client.served = true;
+                } else {
+                    // Si el cliente se marcho durante la preparacion de su cafe, lo notificamos
+                    System.out.println("[Camarero: " + name + "] El cliente " + client.name + " se fue de la cola sin su café.");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
             // Liberamos al camerero para que pueda atender a otro cliente
             assignament = null;
         }
+    }
+
+    // Actualizar el buffer
+    public void setBuffer(Buffer buffer) {
+        this.buffer = buffer;
     }
 }
